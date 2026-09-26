@@ -40,6 +40,8 @@ h2 { font-size: 15px; margin: 0 0 12px; font-weight: 600; }
 .levels { display: flex; gap: 8px; flex-wrap: wrap; }
 .level { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 6px 12px; text-align: center; }
 .level b { display: block; font-size: 20px; }
+.level.prov { border-style: dashed; }
+.level.prov b { color: var(--text-2); }
 .level span { font-size: 12px; color: var(--text-2); }
 .grid { display: grid; gap: 16px; grid-template-columns: repeat(12, 1fr); }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; min-width: 0; }
@@ -102,6 +104,7 @@ const STR = [['new','New'],['learning','Learning'],['familiar','Familiar'],['kno
 const about = D.about || {};
 const level = (about['level'] || '').split('(')[0].trim();
 const detail = ((about['level'] || '').match(/\((.*)\)/) || [])[1] || '';
+const provisional = /provisional/i.test(about['level'] || '') || /in progress/i.test(about['last placement test'] || '');
 const skillLevels = detail.split(',').map(s => s.split(':').map(x => x.trim())).filter(p => p.length === 2 && p[1]);
 
 function barChart(rows, labelFn, tipFn, height = 150) {
@@ -138,10 +141,10 @@ function render() {
   <header>
     <div>
       <h1>${esc(lang)} progress</h1>
-      <div class="sub">${esc(about['native / explanation language'] ? 'Explained in ' + about['native / explanation language'] + ' · ' : '')}Updated ${fmtDay(D.today, { month: 'long', day: 'numeric', year: 'numeric' })}${about['last placement test'] ? ' · Last placement test ' + esc(about['last placement test']) : ''}</div>
+      <div class="sub">${esc(about['native / explanation language'] ? 'Explained in ' + about['native / explanation language'] + ' · ' : '')}Updated ${fmtDay(D.today, { month: 'long', day: 'numeric', year: 'numeric' })}${about['last placement test'] ? (/in progress/i.test(about['last placement test']) ? ' · Placement test ' : ' · Last placement test ') + esc(about['last placement test']) : ''}</div>
     </div>
     <div class="levels">
-      ${level ? `<div class="level"><b>${esc(level)}</b><span>Overall</span></div>` : ''}
+      ${level ? `<div class="level${provisional ? ' prov' : ''}" ${provisional ? 'data-tip="Placement test not finished yet"' : ''}><b>${esc(level)}</b><span>${provisional ? 'Provisional' : 'Overall'}</span></div>` : ''}
       ${skillLevels.map(([k, v]) => `<div class="level"><b>${esc(v)}</b><span>${esc(k)}</span></div>`).join('')}
     </div>
   </header>

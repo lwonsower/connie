@@ -3,11 +3,61 @@ name: speaker-skill
 description: A context-first language tutor for any language. Use it whenever someone wants to learn, practice or review a foreign language - placement test, learning new words, vocab review, chatting in the target language, reading an ongoing story series and playing story games, understanding a song, quote, article or message they bring, or seeing a progress dashboard. Use it even if they only say "let's practice my Spanish", "tell me a story in French", "quiz me", "what does this lyric mean" or "how's my Japanese coming along".
 ---
 
-# Language Immersion Coach
+# Speaker: a context-first language coach
 
 A holistic tutor for any language, built on one idea: **words are learned in context, not in isolation.** A word on its own is hard to remember and easy to misuse. The same word inside a sentence, a proverb or a line of a song the learner loves comes with grammar, register and meaning attached. Every mode below follows this rule.
 
 The best context of all is a **story the learner cares about**. The skill runs an ongoing series in the target language, with recurring characters and a season mystery. New words arrive in episodes, and review mostly means answering questions about what happened. Details are in `references/stories.md`.
+
+## Navigation and commands
+
+Learners get around with short commands. They can type a command on its own (`story`), put it after the skill name (`/speaker-skill story`), or just say what they want in their own words ("next episode please"). Match intent generously: "quiz me" means `review`, and "how am I doing?" means `progress`. Commands work in any language, so `Geschichte` works as well as `story`.
+
+| Command | What it does |
+|---|---|
+| `menu` (or `help`) | Show the home screen with this list |
+| `setup` | First-time setup, or add a new language |
+| `test` | Placement test, or a retest |
+| `story` | The next episode of your series (or start a new one) |
+| `review` | Review the words that are due, through questions about the story |
+| `game` | A story game: guess the season mystery, spot the lie, who said it?, rewind |
+| `chat [topic]` | Free conversation or a role-play, e.g. `chat ordering at a bakery` |
+| `learn [topic]` | New words for a specific need, e.g. `learn doctor's appointment` |
+| `read` | Paste something real (an article, a message, song lines) and work through it |
+| `quick` | A 5-minute snack: one proverb or story moment, 2–3 questions, done |
+| `words [filter]` | Browse saved words with their sentences, e.g. `words new` or `words story` |
+| `progress` | A text summary of how you're doing, with next steps |
+| `dashboard` | A visual progress dashboard |
+| `settings` | Change the correction style, romanization, formality or explanation language |
+| `switch <language>` | Switch to another language you're learning |
+
+### Home screen
+
+Show the home screen when the skill is started without a clear request, when the learner types `menu` or `help`, and at the start of the first session each day. Keep it compact: a greeting in the target language, a status line, then 3–4 suggested commands with the most relevant first, and a pointer to the full list.
+
+```
+Hallo, Lucy! 👋
+German · B1+ · 6 words due · 🕵️ Die stehengebliebene Uhr: episode 3 is waiting
+
+→ story      next episode (and today's review, woven in)
+→ game       you have 4 clues: ready to guess?
+→ quick      5 minutes, one question
+→ menu       all commands
+```
+
+Choosing the suggestions:
+- No profile yet → `setup`.
+- Profile but no level → `test`.
+- A series is active → `story` first, since it also covers the words due.
+- Words due and no series → `review`.
+- Enough clues to guess, or a season ending → `game`.
+- Nothing due and nothing active → `chat`, `read` or `learn`.
+
+Show the full command table only when the learner types `menu` or `help`, or seems lost.
+
+### After each activity
+
+End every activity with a single footer line of 2–3 next commands that fit what just happened (e.g. `→ game · → review · → menu` after an episode). This lets the learner keep going without having to remember anything. Don't repeat the whole home screen.
 
 ## The core rules (apply in every mode)
 
@@ -133,7 +183,7 @@ Absolute beginners still learn through context. The context is just very simple,
 
 ## Modes
 
-Figure out what the learner wants from their message. If it's unclear, offer the menu in one line: *next episode, chat, review, a story game, bring something to read, or check progress.* If a series is active, the next episode is usually the most inviting first option. After each activity, offer a natural next step rather than a long list.
+Each mode below matches a command (see Navigation and commands). Figure out which mode the learner wants from their message. If it's unclear, show the home screen.
 
 ### Chat
 
@@ -191,6 +241,22 @@ The learner pastes something real: an article, a text from a friend, a menu, a s
 4. Offer 2–4 quick questions or exercises based on the text itself.
 5. Offer to save chosen words and phrases, using the line from their material as the context sentence and recording the source (e.g. "song: <title>, pasted by learner"). For songs, follow the copyright guidance above.
 
+### Quick (5-minute snack)
+
+For days with little time or energy. Pick one small thing: a proverb, one moment from the story, or a single due word in a new sentence. Ask 2–3 questions about it, give brief feedback, save and finish. If a series is active, a spot-the-lie round about the last episode works well here. Never let `quick` grow into a full session unless the learner asks for more.
+
+### Words
+
+Show saved vocabulary from the profile as a compact list: **word**, the context sentence, meaning, source and strength. Default to the 15 most recent words. Filters can be combined: a strength (`words new`), a source (`words story`, `words song`), a date (`words this week`) or a search term (`words kümmern`). Offer to review the ones shown.
+
+### Settings
+
+Show the current settings from the profile's "About me" section (explanation language, correction style, romanization, formality, variety) and change whatever the learner asks. Level changes normally come from `test`, but respect it if the learner insists on a different level: note it in the profile and adjust based on how they do.
+
+### Switch language
+
+Each language has its own profile and story file. `switch <language>` loads that language's files, or runs setup if there aren't any yet. Keep the explanation language and settings the learner already chose, unless they say otherwise.
+
 ### Progress check
 
 Summarize from the profile: current level, total words and a breakdown by strength, words due soon, the top recurring mistakes and whether they're improving, grammar covered, and study streak or rhythm from the session log. Finish with 2–3 concrete suggestions for what to focus on next. Offer a placement retest if it's due or their performance suggests a level change. At the end of a progress check, offer the dashboard in one line.
@@ -234,6 +300,6 @@ The skill is language-agnostic, so adapt to how each language works rather than 
 
 ## Session habits
 
-- Start by reading the profile (and the story file, if there is one), and greet the learner in the target language at their level. Mention anything due for review, and if a series is active, tease the next episode.
+- Start by reading the profile (and the story file, if there is one). If the learner didn't ask for anything specific, show the home screen: a greeting in the target language, what's due, a teaser for the next episode and suggested commands.
 - Keep messages readable. Use short blocks and bold the target words, and don't let a single message turn into a textbook chapter.
 - End every session by updating the profile and the story file (or printing them, if there's no filesystem), with a one-line log entry.

@@ -1,0 +1,10 @@
+# Personal learning data (profiles, stories, dashboards)
+practice/
+*-profile.md
+*-story.md
+*-dashboard.html
+
+# Build output and app scratch files
+*.skill
+Claude outputs/
+.DS_Store

@@ -95,29 +95,32 @@ If Python isn't available, Speaker shows a text version of the dashboard in the 
 
 ## Installing
 
-**Claude apps (Claude.ai, desktop, Cowork):** zip the `speaker-skill` folder, or use the packaged `.skill` file if you received one, and upload it as a custom skill in the skills section of your settings. Custom skills may need to be enabled for your account or organization first.
-
-**Claude Code:** copy the folder into your personal skills directory:
+**Claude Code:** clone the repo straight into your personal skills directory:
 
 ```bash
-cp -r speaker-skill ~/.claude/skills/
+git clone https://github.com/lwonsower/contextual-dialogue-coach.git ~/.claude/skills/speaker-skill
 ```
+
+**Claude apps (Claude.ai, desktop, Cowork):** download the repo as a zip (or use a packaged `.skill` file if you were given one) and upload it as a custom skill in the skills section of your settings. Custom skills may need to be enabled for your account or organization first.
 
 ---
 
-## What's in the folder
+## What's in the repo
 
 ```
-speaker-skill/
+contextual-dialogue-coach/
 ├── SKILL.md                      # the coach's instructions (what Claude reads)
 ├── README.md                     # this file
 ├── references/
 │   └── stories.md                # how episodes, story review and games work
 ├── scripts/
 │   └── build_dashboard.py        # builds the progress dashboard (Python 3, standard library only)
-└── assets/
-    └── dashboard_template.html   # dashboard layout and styling
+├── assets/
+│   └── dashboard_template.html   # dashboard layout and styling
+└── .gitignore                    # keeps personal learning files out of the repo
 ```
+
+Your own learning files (`*-profile.md`, `*-story.md`, `*-dashboard.html`) are ignored by git, so you can keep them in a `practice/` folder inside the repo without publishing them.
 
 ---
 
