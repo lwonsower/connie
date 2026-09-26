@@ -55,17 +55,19 @@ Each episode has this structure:
    - A1–A2: choose between 2–3 options written in the target language (understanding the options is part of the practice).
    - B1+: offer options, or ask them to write what the character does next in a sentence or two. Correct gently, and canonize their idea in the next episode.
 
-Save each new word to the profile's vocabulary, with its sentence from the episode as the context sentence and the source recorded as `story S1E3`.
+Save each new word with `review.py add`, using its sentence from the episode as the context sentence and `story S1E3` as the source.
+
+**Plant chances for the focus milestones** (see `milestones.md`, section 4). If the focus is "I can make plans", a character invites the learner's character somewhere and needs an answer. If it's "I can describe what someone is like", someone asks what the new neighbor is like. One chance per episode is plenty. When a milestone is earned, the next episode can mark it with a short in-story moment.
 
 Keep continuity: re-read the story file before writing, reuse names, places and running jokes, and let earlier events matter. Callbacks to old episodes are one of the best review tools there is.
 
 ## 3. Weaving review words into the story
 
-Before writing an episode, pull the words due for review from the profile (up to about 8).
+Before writing an episode, get the words due for review with `review.py due <profile> --limit 8` (or read them from the profile by hand).
 
 - Use each due word **naturally** once in the recap or episode, preferably in a situation that echoes where it was first learned ("It's raining again. Not an *aguacero* like last week, thank goodness").
 - **Don't mark review words.** Noticing and understanding them without help is the review.
-- Afterwards, check them through story questions (section 4). A word counts as reviewed when the learner answers a question about it or uses it correctly. Grade it got it / shaky / missed and update the schedule as in the main SKILL.md.
+- Afterwards, check them through story questions (section 4). A word counts as reviewed when the learner answers a question about it or uses it correctly. Grade it got it / shaky / missed, and record all results at the end of the session with one `review.py grade` call.
 - A word that isn't from a story (from chat or a pasted song, say) can still show up in an episode. That's how outside words get pulled into the story world.
 - If more words are due than fit naturally, run a short story-question round (section 4) on the older episodes before the new episode.
 

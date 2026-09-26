@@ -10,7 +10,8 @@ Most language apps teach words on flashcards: *der Zufall = coincidence*. Words 
 - 🎯 **An adaptive placement test**, from total beginner to advanced, themed around your interests.
 - 💬 **Chat and role-play** with gentle corrections.
 - 🎵 **Real material:** work through articles, texts from friends and lines from songs you love, as well as proverbs, folk songs and poems.
-- 📊 **Progress tracking** in a plain file you own, with a visual dashboard.
+- 🏅 **Can-do milestones**, like *I can tell what I did last weekend* or *I can argue a position*, earned through real use and celebrated when you get there.
+- 📊 **Progress tracking** in a plain file you own, with an at-a-glance dashboard right in the chat.
 
 ---
 
@@ -43,8 +44,9 @@ Type a command on its own (`story`), after the skill name (`/speaker-skill story
 | `read` | Paste an article, a message or song lines, and work through them together |
 | `quick` | A 5-minute snack for busy days |
 | `words [filter]` | Browse your saved words with their sentences (`words new`, `words story`, `words this week`) |
+| `milestones` | Your can-do goals: earned, in focus, and what's next |
 | `progress` | A text summary of how you're doing |
-| `dashboard` | A visual progress dashboard (HTML) |
+| `dashboard` | An at-a-glance progress dashboard, shown in the chat |
 | `settings` | Correction style, romanization, formality, explanation language |
 | `switch <language>` | Switch between the languages you're learning |
 
@@ -56,7 +58,12 @@ Type a command on its own (`story`), after the skill name (`/speaker-skill story
 
 **Stories are the engine.** Each series has a small cast with distinct voices (one speaks in slang, one is very formal, one talks in proverbs), a setting where the language is actually spoken, and a central question for each season. Each episode has a short recap (where due words sneak back in), a scene at your level with 3–8 new words, one real cultural detail and a cliffhanger. At the end, you choose what happens next, in the target language.
 
-**Spaced repetition, quietly.** Words come back after 1, 3, 7, 14, 30, 60 and 120 days. A word you miss comes back tomorrow, and there's no penalty for that.
+**Spaced repetition, quietly.** Words come back after 1, 3, 7, 14, 30, 60 and 120 days. A word you miss comes back tomorrow, and there's no penalty for that. A small script (`scripts/review.py`) works out the dates, so they're always exact:
+
+```bash
+python3 scripts/review.py due practice/german-profile.md
+python3 scripts/review.py grade practice/german-profile.md --got "gießen" --missed "der Zufall"
+```
 
 **Gentle corrections.** By default, you get a short recap of the 1–3 mistakes that matter most at the end of a message, not red ink on everything. You can change this in `settings`.
 
@@ -66,6 +73,21 @@ Type a command on its own (`story`), after the skill name (`/speaker-skill story
 
 ---
 
+## Can-do milestones
+
+Progress is measured in things you can *do*. Every level from Pre-A1 to C1 has the same six strands (People, Daily life, Getting things done, Telling stories, Opinions, Real material), so the milestones form one continuous path. For example:
+
+| Level | Telling stories |
+|---|---|
+| Pre-A1 | I can follow a tiny story with support and say who did what. |
+| A2 | I can tell what I did last weekend. |
+| B1 | I can retell a story or film plot in order, with connectors. |
+| C1 | I can write a short scene or story of my own. |
+
+Your placement test credits the levels you already have, and you work on 1–2 **focus milestones** at a time. The story quietly gives you chances to use them: a character asks about your weekend, or something goes wrong at the café. A milestone is **earned with real practice: 3 successful uses on at least 2 different days**. One lucky answer doesn't count. When you earn one, it's celebrated in the story and with a milestone card. Earn all six and you've completed the level.
+
+The full list is in `references/milestones.md`.
+
 ## Your files
 
 Everything lives in plain Markdown next to wherever you keep your learning files. You can open, read and edit these files yourself.
@@ -74,22 +96,35 @@ Everything lives in plain Markdown next to wherever you keep your learning files
 |---|---|
 | `<language>-profile.md` | Your level, settings, saved words (with sentences and review dates), recurring mistakes, grammar covered and a session log |
 | `<language>-story.md` | Your story: cast, running plot threads, clues found and a summary of each episode |
-| `<language>-dashboard.html` | The visual dashboard, rebuilt every time you ask for it |
+| `<language>-archive.md` | Older material moved out of the profile to keep it short: known words (still reviewed when due), resolved mistakes, earned milestones and older log entries |
 
 ---
 
 ## The dashboard
 
-Type `dashboard` to get a single-page view of your progress: your level, words saved, reviews due, streak, vocabulary by strength, words added per week, upcoming reviews, your current story and clues, recently learned words in context, recurring mistakes, grammar covered and suggested next steps. It works offline and in light or dark mode.
+Type `dashboard` to see your progress right in the chat:
 
-It's built by a small script (`scripts/build_dashboard.py`) that only needs Python 3, with no extra packages. You can also run it yourself:
+```
+11 words saved · 0 due today · 1-day streak · 1 session this month
 
-```bash
-python3 scripts/build_dashboard.py path/to/german-profile.md \
-  --next "Start the mystery series" --next "Practice als ob clauses"
+VOCABULARY BY STRENGTH
+  new        11  ████████████████████████
+  learning    0
+  familiar    0
+  known       0
+
+WORDS ADDED, LAST 12 WEEKS   ▁▁▁▁▁▁▁▁▁▁▁█   (11 total, 11 this week)
 ```
 
-If Python isn't available, Speaker shows a text version of the dashboard in the chat instead.
+This is followed by your current story and clues, recently learned words with their sentences, recurring mistakes, grammar you're comfortable or shaky with, and suggested next steps.
+
+A small script (`scripts/dashboard.py`) does the counting, so the numbers are exact. It only needs Python 3, with no extra packages. You can also run it yourself:
+
+```bash
+python3 scripts/dashboard.py path/to/german-profile.md --next "Start the mystery series"
+```
+
+If Python isn't available, Speaker builds the same view by hand from your profile.
 
 ---
 
@@ -112,15 +147,17 @@ contextual-dialogue-coach/
 ├── SKILL.md                      # the coach's instructions (what Claude reads)
 ├── README.md                     # this file
 ├── references/
-│   └── stories.md                # how episodes, story review and games work
+│   ├── stories.md                # how episodes, story review and games work
+│   └── milestones.md             # the 36 can-do milestones and how they're earned
 ├── scripts/
-│   └── build_dashboard.py        # builds the progress dashboard (Python 3, standard library only)
-├── assets/
-│   └── dashboard_template.html   # dashboard layout and styling
+│   ├── dashboard.py              # prints the progress dashboard (Python 3, standard library only)
+│   ├── review.py                 # spaced repetition: due words, grading, saving words, tidying the profile
+│   ├── milestones.py             # can-do milestones: setup, focus, evidence, earning
+│   └── profile_md.py             # shared helpers for reading and editing the Markdown files
 └── .gitignore                    # keeps personal learning files out of the repo
 ```
 
-Your own learning files (`*-profile.md`, `*-story.md`, `*-dashboard.html`) are ignored by git, so you can keep them in a `practice/` folder inside the repo without publishing them.
+Your own learning files (`*-profile.md`, `*-story.md`, `*-archive.md`) are ignored by git, so you can keep them in a `practice/` folder inside the repo without publishing them.
 
 ---
 

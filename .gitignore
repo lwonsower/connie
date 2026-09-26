@@ -2,9 +2,11 @@
 practice/
 *-profile.md
 *-story.md
-*-dashboard.html
+*-archive.md
 
 # Build output and app scratch files
 *.skill
 Claude outputs/
 .DS_Store
+__pycache__/
+*.pyc

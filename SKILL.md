@@ -26,8 +26,9 @@ Learners get around with short commands. They can type a command on its own (`st
 | `read` | Paste something real (an article, a message, song lines) and work through it |
 | `quick` | A 5-minute snack: one proverb or story moment, 2–3 questions, done |
 | `words [filter]` | Browse saved words with their sentences, e.g. `words new` or `words story` |
+| `milestones` | Your can-do goals: what you've earned, what you're working on |
 | `progress` | A text summary of how you're doing, with next steps |
-| `dashboard` | A visual progress dashboard |
+| `dashboard` | An at-a-glance progress dashboard, shown in the chat |
 | `settings` | Change the correction style, romanization, formality or explanation language |
 | `switch <language>` | Switch to another language you're learning |
 
@@ -37,7 +38,8 @@ Show the home screen when the skill is started without a clear request, when the
 
 ```
 Hallo, Lucy! 👋
-German · B1+ · 6 words due · 🕵️ Die stehengebliebene Uhr: episode 3 is waiting
+German · B1+ · 6 words due · 🎯 I can argue a position (2/3)
+🕵️ Die stehengebliebene Uhr: episode 3 is waiting
 
 → story      next episode (and today's review, woven in)
 → game       you have 4 clues: ready to guess?
@@ -83,6 +85,9 @@ Progress lives in a plain Markdown file, so it's portable and readable and works
 - If a filesystem or connected folder is available, use `<target-language>-profile.md` (e.g. `spanish-profile.md`) in a folder the learner chooses. At the start of a session, look for the file and read it. At the end of any session where something changed, update it.
 - If no filesystem is available (e.g. plain chat), print the updated profile at the end of the session in a single fenced code block. Ask the learner to save it and paste it back next time.
 - If the learner has several languages, keep one file per language.
+- Next to each profile there may also be `<language>-story.md` (the story series) and `<language>-archive.md` (older material, see below).
+
+**Keeping the profile short:** the profile is read at the start of every session, so it should stay lean even after months of practice. `review.py tidy` moves words that reach `known`, mistakes not seen for 45 days and all but the 15 newest session-log entries into `<language>-archive.md`. Completed milestone levels move there too (see `milestones.py`). Known words in the archive are still reviewed when they come due: `review.py` reads both files, and a known word that's missed moves back into the profile. Read the archive only when you need it, for example when the learner asks about an old word or for their full history. Without Python, do the same moves by hand once the vocabulary table passes about 150 rows.
 
 **When there's no profile yet**, run first-time setup (below) before anything else, unless the learner just wants a quick one-off answer. In that case, answer and then offer to set up tracking.
 
@@ -98,7 +103,7 @@ Progress lives in a plain Markdown file, so it's portable and readable and works
 - Last placement test: <YYYY-MM-DD>
 - Goals: <travel, family, work, exams, media...>
 - Interests: <music genres, cooking, football, history...>
-- Script / romanization: <e.g. "show romaji" / "kana only" / n/a>
+- Script / romanization: <e.g. "show romaji" / "kana only" / "niqqud on new words" / n/a>
 - Correction style: <gentle recap at end of message | inline | only when asked>
 - Formality: <which register to practice, e.g. tu vs vous>
 
@@ -117,11 +122,51 @@ Progress lives in a plain Markdown file, so it's portable and readable and works
 ## Favorite sources
 - <songs, proverbs, poems or texts the learner has worked with, with the lines they brought>
 
+## Milestones
+- Levels completed: <e.g. Pre-A1, A1 (placement, 2026-09-25)>
+
+| ID | Can-do | Status | Evidence | Earned |
+|---|---|---|---|---|
+| A2-stories | I can tell what I did last weekend. | focus | 2026-09-27 retold S1E2; 2026-09-28 chat about Saturday | |
+
 ## Session log
 - <YYYY-MM-DD> — <mode>: <one line on what was done, words added, level notes>
 ```
 
 Strength values: `new`, `learning`, `familiar`, `known`.
+
+### Saving words and scheduling reviews
+
+When you can run Python, use `scripts/review.py` for everything that touches the vocabulary table. Working out dates and intervals by hand is where mistakes creep in, and the script also keeps the Markdown table well formed.
+
+```bash
+R=<skill-dir>/scripts/review.py
+python3 $R due   <profile.md> [--limit 12] [--ahead 2]   # words due now (overdue first), with sentences
+python3 $R grade <profile.md> --got "gießen" --shaky "ausgerechnet" --missed "der Zufall"
+python3 $R add   <profile.md> --word "die Spur" --sentence "Der Dieb hat keine Spur hinterlassen." \
+                 --meaning "trace" --source "story S1E1"
+python3 $R stats <profile.md>                            # one-line summary
+```
+
+- `due` is the source of truth for what's due. Run it at the start of any session that includes review, including story episodes.
+- `grade` takes the word exactly as it's saved (matching ignores case). It applies the schedule below, updates the next date, interval and strength, and prints a summary you can pass on. It reports any word it can't find. Fix the spelling and grade that word again.
+- `add` refuses to save a word without a context sentence, skips duplicates, and schedules the new word for tomorrow.
+- All of them accept `--today YYYY-MM-DD` and `--dry-run` (for grade and add). **Always pass `--today` with the learner's local date.** The machine running the script is often set to UTC, so without it an evening session in California counts as tomorrow and words come due early. The same applies to `dashboard.py`.
+
+Without Python, apply the same rules by hand: intervals step through 1 → 3 → 7 → 14 → 30 → 60 → 120 days. *Got it* moves up one step, *shaky* keeps the same interval, and *missed* resets to 1 day. Strength goes `new` → `learning` after the first correct answer, `familiar` at 14+ days and `known` at 60+ days, and a missed word drops back to `learning`.
+
+The mistakes, grammar, sources and session log sections are still edited directly in the profile file.
+
+## Can-do milestones
+
+Progress is measured by what the learner **can do**, not by word counts. There are 36 milestones: 6 strands (People, Daily life, Getting things done, Telling stories, Opinions, Real material) × 6 levels (Pre-A1 to C1). Read `references/milestones.md` for the full list and the rules. In short:
+
+- **After the placement test**, run `milestones.py init --level <result>`. This credits the levels below and adds the current level's six milestones. Then pick **1–2 focus milestones** that fit the learner's goals, and tell them in one line.
+- **A milestone is earned through repeated, real use:** 3 pieces of evidence on at least 2 different days. For productive milestones, the evidence has to be the learner's own words. Log evidence quietly as it happens (`milestones.py log`), in any mode.
+- **Create chances for the focus milestones**, especially in the story. If the focus is "I can tell what I did last weekend", a character asks about the learner's weekend.
+- **Celebrate when a milestone is earned:** a short in-story moment plus a milestone card (the format is in `references/milestones.md`, section 5). When all six milestones of a level are earned, celebrate the level, update the profile's level, and set up the next level.
+
+The `milestones` command shows `milestones.py status` as a short list: 🏅 earned, 🎯 focus with its evidence count, ○ open.
 
 ## First-time setup
 
@@ -143,7 +188,7 @@ An adaptive check of about 10 minutes that estimates a CEFR level (Pre-A1 to C2)
 
 **Theme the items around the learner's interests.** For a mystery fan, the notes, signs and news snippets can hint at a small mystery (a stopped clock, a missing key) that builds from item to item. It makes the test feel like the start of something rather than an exam. It also gives you a ready-made world: the first story premise you pitch afterwards can continue it.
 
-1. **Start** one band below what they self-reported (or at A1 if unsure).
+1. **Start** one band below what they self-reported (or at A1 if unsure). **If the first item is clearly too hard** (the learner says they're lost, or can't start), drop straight to the band below with a much smaller item, such as reading 2–3 single words, rather than making them struggle through a second item at that level. Being lost on question 1 is discouraging, and it tells you little.
 2. **Each band gets 2 items**, mixing these types:
    - *Read and answer:* a 1–4 sentence text (a note, a sign, a message, a proverb, a short news-style paragraph at higher levels), then one comprehension question.
    - *Fill the gap:* a sentence with one word or form missing (it tests grammar and vocabulary in context).
@@ -158,7 +203,7 @@ An adaptive check of about 10 minutes that estimates a CEFR level (Pre-A1 to C2)
 
 **Scoring:** estimate reading and writing separately, since learners are often a band apart. Place them at the highest band they handled comfortably. Watch for signs of a higher level (vocabulary range, correct use of tenses and moods) as well as errors.
 
-**Reporting:** give the level with a one-line meaning (e.g. "A2: you can handle everyday exchanges and simple descriptions"), 2–3 strengths, 2–3 things to work on, and a suggested starting plan. Save everything to the profile, including the mistake patterns from the free response.
+**Reporting:** give the level with a one-line meaning (e.g. "A2: you can handle everyday exchanges and simple descriptions"), 2–3 strengths, 2–3 things to work on, and a suggested starting plan. Save everything to the profile, including the mistake patterns from the free response. Then set up milestones (`milestones.py init --level <result>`), choose 1–2 focus milestones, and name them in the report: "Your first goals: **I can describe what someone is like** and **I can tell what I did last weekend.**"
 
 **Retesting:** offer a retest when the learner asks, or roughly every 6–8 weeks of regular practice. Also offer one when their performance in sessions is consistently above or below their recorded level.
 
@@ -214,21 +259,18 @@ Use this outside the story, when the learner wants words for a specific need ("w
 1. **Present them in a connected context:** a short story, a dialogue, a diary entry or a scene, written at their level with the new words bolded. Where one fits, add a real proverb, idiom or folk-song line that uses one of the words.
 2. **Unpack:** for each word, give the meaning *in this sentence*, key grammar facts (gender/article, irregular forms, the particle or preposition it takes, formality), and one more example sentence showing a different use.
 3. **Use it:** 3–5 quick in-context exercises. Gap-fill the story, answer questions about it, or write a sentence of their own using a word. Give feedback on each answer.
-4. **Save:** add the words to the profile with the story sentence as the context sentence, strength `new`, and the next review set for tomorrow.
+4. **Save:** add each word with `review.py add`, using the story sentence as the context sentence. Without Python, add a row with strength `new` and the next review set for tomorrow.
 
 ### Review (spaced repetition)
 
-1. Pull words whose "Next review" date is today or earlier (oldest first, about 10–15 per session). If none are due, say so. Offer to review weaker ones early, or to learn something new.
+1. Get the due words with `review.py due` (or, without Python, pull words whose "Next review" date is today or earlier, oldest first). Review about 10–15 per session. If none are due, say so, and offer to review weaker ones early (`due --ahead 3`) or to learn something new.
 2. **If a series is active, review through the story.** This is the default. Work the due words into the next episode's recap and scene, then ask story questions (fill the quote, who said it, spot the lie, callbacks to earlier episodes, answer as a character). Each good answer can earn a clue in the season mystery. See `references/stories.md`, sections 3–5. Use the formats below for words that didn't fit naturally, or when the learner asks for a quick drill.
 3. **Otherwise, quiz each word in a sentence, never alone.** Vary the format so it doesn't become rote:
    - Show the saved context sentence with the word blanked out, plus a hint.
    - Show a *new* sentence using the word and ask what it means there.
    - Give a situation and ask them to produce a sentence using the word.
    - For higher levels, ask for a synonym or the difference from a similar word.
-4. Grade each answer as **got it / shaky / missed** and update the schedule:
-   - Intervals: 1 → 3 → 7 → 14 → 30 → 60 → 120 days.
-   - *Got it:* move to the next interval. *Shaky:* keep the same interval. *Missed:* reset to 1 day.
-   - Update the strength: `new` → `learning` after the first correct answer, `familiar` at the 14-day interval, `known` at 60 days or more.
+4. Grade each answer as **got it / shaky / missed**, and record them all at the end with a single `review.py grade` call (see "Saving words and scheduling reviews" for the rules without Python). Grade in one batch, so the learner isn't interrupted by bookkeeping.
 5. End with a mini-summary (e.g. "12 reviewed, 9 solid, 3 coming back tomorrow", or in the story's own terms: "3 new clues, 9 words solid"), plus one sentence that uses several of today's words together.
 
 ### Bring your own material (immersion)
@@ -259,32 +301,34 @@ Each language has its own profile and story file. `switch <language>` loads that
 
 ### Progress check
 
-Summarize from the profile: current level, total words and a breakdown by strength, words due soon, the top recurring mistakes and whether they're improving, grammar covered, and study streak or rhythm from the session log. Finish with 2–3 concrete suggestions for what to focus on next. Offer a placement retest if it's due or their performance suggests a level change. At the end of a progress check, offer the dashboard in one line.
+Summarize from the profile: current level and milestone progress (earned, focus and how close they are), total words and a breakdown by strength, words due soon, the top recurring mistakes and whether they're improving, grammar covered, and study streak or rhythm from the session log. Finish with 2–3 concrete suggestions for what to focus on next. Offer a placement retest if it's due or their performance suggests a level change. At the end of a progress check, offer the dashboard in one line.
 
 ### Dashboard view
 
-Use this when the learner asks to *see* their progress: "show my dashboard", "progress dashboard", "show me my stats", "how am I doing, visually". It renders the profile as a single-page visual dashboard:
+Use this when the learner asks to *see* their progress: "show my dashboard", "show me my stats", "how am I doing, at a glance". The dashboard is shown as text right in the chat, with no files or links. It includes:
 
-- Level badges (overall, and reading/writing/chat if recorded)
+- Level (overall, plus reading/writing/chat if recorded), marked provisional if the placement test isn't finished
+- **Can-do milestones first:** the current level with 🏅 earned, 🎯 focus (with evidence counts) and ○ open, plus any evidence already collected for the next level
 - Headline stats: words saved, reviews due today, day streak and sessions this month
-- Vocabulary broken down by strength
-- Words added per week (last 12 weeks) and reviews coming up in the next 7 days
-- Recently learned words, each shown with its context sentence and source
-- The current story: series title, season question, episodes so far, clues earned and the latest episode (if a story file exists next to the profile)
-- Recurring mistakes, grammar covered, recent sessions and your suggested next steps
+- Vocabulary by strength and reviews over the next 7 days, as block-character bars
+- Words added over the last 12 weeks, as a sparkline
+- The current story: title, season question, episodes, clues found and the latest episode
+- Recently learned words, each with its context sentence
+- Recurring mistakes, grammar grouped by comfortable, shaky and new, and 2–3 next steps
 
 **How to build it:**
 
-1. Make sure the profile is up to date first. If this session changed anything, save those changes before building.
-2. Write 2–3 short, concrete next steps based on the profile (e.g. "Drill ser vs estar with short scenes"). They appear on the dashboard.
-3. If you can run Python, use the bundled script. It needs only the standard library and reads the profile format above:
+1. Make sure the profile is up to date. If this session changed anything, save those changes first.
+2. Write 2–3 short, concrete next steps based on the profile (e.g. "Drill ser vs estar with short scenes").
+3. If you can run Python, use the bundled script. It needs only the standard library, reads the profile (and the story file next to it, if there is one), and prints Markdown:
    ```bash
-   python3 <skill-dir>/scripts/build_dashboard.py <profile.md> \
+   python3 <skill-dir>/scripts/dashboard.py <profile.md> \
      --next "first step" --next "second step" --next "third step"
    ```
-   It writes `<language>-dashboard.html` next to the profile, as a self-contained file that works offline in light and dark mode. Rebuild it each time it's requested so it reflects the latest profile rather than an old snapshot.
-4. Show it to the learner in whatever way the environment allows: publish or preview it as an HTML artifact if available, send the file, or tell them where it was saved so they can open it in a browser.
-5. **If you can't run code or show HTML**, give a compact text dashboard in chat instead. Include the level, headline stats, a strength bar drawn with block characters (e.g. `New ████ 12 · Learning ███ 9 · Familiar ████ 12 · Known ████ 13`), words due this week, the top 3 mistakes, and next steps.
+   Paste its output into your reply exactly as printed. The bars sit inside a code block so they line up. Don't add a second summary above or below it. One short line inviting the learner to act on something (e.g. "11 words come back tomorrow → `review`") is enough.
+4. **If you can't run code**, build the same layout by hand from the profile: a bold header line with the level, a code block with the headline stats and the bars (scale the longest bar to about 24 `█` characters and use `▁▂▃▄▅▆▇█` for the sparkline), then short Markdown sections for the story, recent words, mistakes, grammar and next steps. Count carefully. If a number isn't in the profile, leave that line out rather than guessing.
+
+Keep target-language words and sentences out of the code block. Characters like CJK, Arabic or emoji take up different widths and break the alignment, so they belong in the Markdown sections below the block.
 
 The dashboard is read-only: it reflects the profile but doesn't change it. If the learner wants to act on something they see, like reviewing the words that are due, switch to that mode.
 
@@ -293,7 +337,10 @@ The dashboard is read-only: it reflects the profile but doesn't change it. If th
 The skill is language-agnostic, so adapt to how each language works rather than forcing one template:
 
 - **Grammar facts to include with new words:** gender and articles (German, French, Spanish, Arabic, Hindi...), case (German, Russian, Finnish, Polish...), aspect pairs (Russian, Polish), measure words or classifiers (Mandarin, Japanese, Thai), particles (Japanese, Korean), verb conjugation groups, and tones (Mandarin, Vietnamese, Thai, Yoruba). Record tones or pitch in the vocab entry where it matters.
-- **Script:** show the native script first, with romanization as long as the learner wants it. For languages written right to left, keep the target text on its own lines so it displays cleanly.
+- **Script:** show the native script first, with romanization as long as the learner wants it. For languages written right to left (Hebrew, Arabic, Persian, Urdu), keep the target text on its own lines, and don't mix it with English on the same line, so it displays cleanly.
+- **Gender items in Hebrew and Arabic:** when a test item or exercise checks masculine vs. feminine forms, pick forms whose spelling differs even without vowel marks (אוֹכֵל/אוֹכֶלֶת, not שׁוֹתֶה/שׁוֹתָה, which are both written שותה). Otherwise a correct answer can't show whether the learner knows the difference.
+- **Right-to-left punctuation in files:** in chat, RTL sentences sometimes display with the final punctuation on the left, but always save them in logical order, with the punctuation at the end of the text (`שָׁלוֹם, מוֹתֶק!`, not `!שָׁלוֹם, מוֹתֶק`).
+- **Vowel marks:** Hebrew (niqqud) and Arabic (harakat) are normally written without most vowels. Treat vowel marks like romanization, as training wheels: show them fully at Pre-A1/A1, keep them only on new or ambiguous words at A2–B1, and drop them from B1+ unless the learner asks. Record the choice in the profile's script setting. When saving words, save the form the learner saw, and add the other form in the meaning column if it helps (e.g. `שָׁלוֹם (שלום)`).
 - **Varieties:** stick to the variety in the profile and point out when a word differs across regions.
 - **Formality and politeness:** mention register whenever it changes the word choice (tu/vous, du/Sie, Japanese keigo, Korean speech levels).
 - **Be honest about uncertainty.** For less-resourced languages or regional dialects, tell the learner when you're less sure of a form or usage, and suggest checking with a native speaker.
@@ -302,4 +349,9 @@ The skill is language-agnostic, so adapt to how each language works rather than 
 
 - Start by reading the profile (and the story file, if there is one). If the learner didn't ask for anything specific, show the home screen: a greeting in the target language, what's due, a teaser for the next episode and suggested commands.
 - Keep messages readable. Use short blocks and bold the target words, and don't let a single message turn into a textbook chapter.
-- End every session by updating the profile and the story file (or printing them, if there's no filesystem), with a one-line log entry.
+- End every session in this order:
+  1. Grade the reviewed words (`review.py grade`).
+  2. Log milestone evidence (`milestones.py log`), then celebrate anything that printed EARNED or LEVEL COMPLETE.
+  3. Update the story file and add a one-line session-log entry.
+  4. Run `review.py tidy`.
+  Without a filesystem, print the profile and story file instead.
