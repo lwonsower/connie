@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Print a text progress dashboard (Markdown) from a speaker-skill learner profile.
+"""Print a text progress dashboard (Markdown) from a connie learner profile.
 
 Usage:
   python3 dashboard.py <profile.md> [--today YYYY-MM-DD] [--story story.md]

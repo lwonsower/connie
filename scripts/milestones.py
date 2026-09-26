@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Can-do milestones for speaker-skill learner profiles.
+"""Can-do milestones for connie learner profiles.
 
 The milestone list lives in references/milestones.md (6 strands × Pre-A1…C1). The profile
 keeps only the current level's rows; completed levels are summarized on one line and their
@@ -281,7 +281,7 @@ def cmd_status(p, a, today):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Can-do milestones for speaker-skill profiles.")
+    ap = argparse.ArgumentParser(description="Can-do milestones for connie profiles.")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     def common(sp):

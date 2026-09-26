@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Spaced-repetition helper for speaker-skill learner profiles.
+"""Spaced-repetition helper for connie learner profiles.
 
 Reads and updates the Vocabulary table in <language>-profile.md (and the known words kept in
 <language>-archive.md), so review dates and intervals are computed exactly rather than by hand.
@@ -285,7 +285,7 @@ def cmd_tidy(st, a, today):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Spaced-repetition helper for speaker-skill profiles.")
+    ap = argparse.ArgumentParser(description="Spaced-repetition helper for connie profiles.")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     def common(sp, dry=False):

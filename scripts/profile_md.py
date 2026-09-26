@@ -1,4 +1,4 @@
-"""Shared helpers for reading and editing speaker-skill Markdown files (profile, archive).
+"""Shared helpers for reading and editing connie Markdown files (profile, archive).
 
 The files are plain Markdown: `## ` sections, some containing a pipe table. These helpers
 find sections and tables and edit rows in place, leaving everything else untouched.

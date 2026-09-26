@@ -1,8 +1,8 @@
-# Speaker
+# Connie
 
-**A context-first language coach for Claude. It works for any language, at any level.**
+**The contextual dialogue coach: a context-first language coach for Claude. It works for any language, at any level.**
 
-Most language apps teach words on flashcards: *der Zufall = coincidence*. Words learned that way are hard to remember and easy to misuse. Speaker never shows a word on its own. Every new word comes inside a sentence, and the best sentences come from a story you actually want to keep reading.
+Most language apps teach words on flashcards: *der Zufall = coincidence*. Words learned that way are hard to remember and easy to misuse. Connie never shows a word on its own. Every new word comes inside a sentence, and the best sentences come from a story you actually want to keep reading.
 
 - 📖 **An ongoing mystery (or drama, or adventure) in your target language**, with recurring characters and one short episode per session. Everything is pitched at your level.
 - 🔁 **Review that doesn't feel like review.** Words that are due come back in the next episode, and you answer questions about the story instead of flipping flashcards.
@@ -18,18 +18,18 @@ Most language apps teach words on flashcards: *der Zufall = coincidence*. Words 
 ## Getting started
 
 1. Install the skill (see [Installing](#installing) below).
-2. Start a conversation with Claude and say something like *"I want to learn Italian"* or *"let's practice my Japanese"*, or type `/speaker-skill`.
-3. Speaker asks a few quick questions (your level, why you're learning, what you're into), offers a ~10-minute placement test, and then pitches you three story ideas.
+2. Start a conversation with Claude and say something like *"I want to learn Italian"* or *"let's practice my Japanese"*, or type `/connie`.
+3. Connie asks a few quick questions (your level, why you're learning, what you're into), offers a ~10-minute placement test, and then pitches you three story ideas.
 
 That's it. Each time after that, type `story` to continue, or `menu` to see everything.
 
-> **Tip:** to keep your progress between conversations, give Claude access to a folder (in Cowork or Claude Code), and Speaker will save your profile there. In a plain chat with no folder, Speaker prints your profile at the end of each session for you to save and paste back next time.
+> **Tip:** to keep your progress between conversations, give Claude access to a folder (in Cowork or Claude Code), and Connie will save your profile there. In a plain chat with no folder, Connie prints your profile at the end of each session for you to save and paste back next time.
 
 ---
 
 ## Commands
 
-Type a command on its own (`story`), after the skill name (`/speaker-skill story`), or just say what you want in your own words ("next episode please" works too).
+Type a command on its own (`story`), after the skill name (`/connie story`), or just say what you want in your own words ("next episode please" works too).
 
 | Command | What it does |
 |---|---|
@@ -67,9 +67,9 @@ python3 scripts/review.py grade practice/german-profile.md --got "gießen" --mis
 
 **Gentle corrections.** By default, you get a short recap of the 1–3 mistakes that matter most at the end of a message, not red ink on everything. You can change this in `settings`.
 
-**Any language.** Speaker adapts to how each language works: gender and articles, cases, tones, measure words, particles, formal vs. informal speech, and different writing systems (with romanization until you don't need it). For total beginners in a new writing system, it teaches the script first, through real words and signs.
+**Any language.** Connie adapts to how each language works: gender and articles, cases, tones, measure words, particles, formal vs. informal speech, and different writing systems (with romanization until you don't need it). For total beginners in a new writing system, it teaches the script first, through real words and signs.
 
-**Songs and copyright.** Speaker uses proverbs, folk songs and poems in the public domain freely. For copyrighted songs, paste the lines you're listening to and Speaker will explain them, but it won't reproduce lyrics you haven't pasted.
+**Songs and copyright.** Connie uses proverbs, folk songs and poems in the public domain freely. For copyrighted songs, paste the lines you're listening to and Connie will explain them, but it won't reproduce lyrics you haven't pasted.
 
 ---
 
@@ -124,7 +124,7 @@ A small script (`scripts/dashboard.py`) does the counting, so the numbers are ex
 python3 scripts/dashboard.py path/to/german-profile.md --next "Start the mystery series"
 ```
 
-If Python isn't available, Speaker builds the same view by hand from your profile.
+If Python isn't available, Connie builds the same view by hand from your profile.
 
 ---
 
@@ -133,7 +133,7 @@ If Python isn't available, Speaker builds the same view by hand from your profil
 **Claude Code:** clone the repo straight into your personal skills directory:
 
 ```bash
-git clone https://github.com/lwonsower/contextual-dialogue-coach.git ~/.claude/skills/speaker-skill
+git clone https://github.com/lwonsower/contextual-dialogue-coach.git ~/.claude/skills/connie
 ```
 
 **Claude apps (Claude.ai, desktop, Cowork):** download the repo as a zip (or use a packaged `.skill` file if you were given one) and upload it as a custom skill in the skills section of your settings. Custom skills may need to be enabled for your account or organization first.
@@ -163,6 +163,6 @@ Your own learning files (`*-profile.md`, `*-story.md`, `*-archive.md`) are ignor
 
 ## Sharing and feedback
 
-Feel free to share Speaker with anyone learning a language. If you tweak it (new games, better placement questions, notes for specific languages), the places to edit are `SKILL.md` and `references/stories.md`.
+Feel free to share Connie with anyone learning a language. If you tweak it (new games, better placement questions, notes for specific languages), the places to edit are `SKILL.md` and `references/stories.md`.
 
 Viel Spaß · Bonne chance · ¡Buena suerte · 頑張って 🎉
